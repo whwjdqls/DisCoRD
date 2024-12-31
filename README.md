@@ -1,5 +1,6 @@
 # DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding [arXiv 2024]
 
+![](./images/teaser.png)
 
 <p align="center">
   <a href='https://arxiv.org/abs/2411.19527'>
@@ -12,16 +13,52 @@
   <img src='https://img.shields.io/badge/Project-Page-orange?style=flat&logo=Google%20chrome&logoColor=orange'></a>
 </p>
 
-# ToDo
-- [ ] 
+<p align="center">
+  <p align="center">
+      <a href='https://github.com/whwjdqls/' target='_blank'>Jungbin Cho</a><sup>*</sup>&emsp;
+      <a href='https://junwankimm.github.io/' target='_blank'>Junwan Kim</a><sup>*</sup>&emsp;
+      <a href='https://mirlab.yonsei.ac.kr/people/jisoo.html/' target='_blank'>Jisoo Kim</a>&emsp;
+      <a href='https://mirlab.yonsei.ac.kr/people/minseo.html/' target='_blank'>Minseo Kim</a>&emsp;
+      <a href='' target='_blank'>Mingu Kang</a>&emsp;
+      <a href='https://www.csehong.com/' target='_blank'>Sungeun Hong</a>&emsp;
+      <a href='https://ami.postech.ac.kr/members/tae-hyun-oh/' target='_blank'>Tae-Hyun Oh</a>&emsp;
+      <a href='https://yj-yu.github.io/home/' target='_blank'>Youngjae Yu</a><sup>†</sup>&emsp;
+    </p>
+  <p align="center">
+    <sup>*</sup>Equal Contribution. <sup>†</sup>Corresponding Author.
+  </p>
+</p>
+
+---
+
+Official pytorch code release of "[DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding](https://arxiv.org/abs/2411.19527)"
+
+## 📨 News
+🚀 **31/Dec/24** - Released the inference & evaluation code
+
+## ⚙️ Settings
+### Environments
+
+### Download Checkpoints
+
+### Download Datasets
+
+## 🏃🏻‍♂️ Inference
+
+## 🔥 Training DisCoRD
+
+## 👀 Acknowledgements
+
+## 🔑 License
+This code is released under the MIT License.
+
+## Citations
+If you think this repository is useful for your work, please consider citing it as follows:
 ```
-@misc{cho2024discorddiscretetokenscontinuous,
-      title={DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding}, 
-      author={Jungbin Cho and Junwan Kim and Jisoo Kim and Minseo Kim and Mingu Kang and Sungeun Hong and Tae-Hyun Oh and Youngjae Yu},
-      year={2024},
-      eprint={2411.19527},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2411.19527}, 
+@article{cho2024discord,
+  title={DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding},
+  author={Cho, Jungbin and Kim, Junwan and Kim, Jisoo and Kim, Minseo and Kang, Mingu and Hong, Sungeun and Oh, Tae-Hyun and Yu, Youngjae},
+  journal={arXiv preprint arXiv:2411.19527},
+  year={2024}
 }
 ```
