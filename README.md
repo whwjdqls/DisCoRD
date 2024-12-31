@@ -11,6 +11,8 @@
   </a>
   <a href='https://whwjdqls.github.io/discord.github.io/'>
   <img src='https://img.shields.io/badge/Project-Page-orange?style=flat&logo=Google%20chrome&logoColor=orange'></a>
+  <a href='https://paperswithcode.com/sota/motion-synthesis-on-humanml3d?p=discord-discrete-tokens-to-continuous-motion'>
+  <img src='https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/discord-discrete-tokens-to-continuous-motion/motion-synthesis-on-humanml3d'>
 </p>
 
 <p align="center">
@@ -37,7 +39,17 @@ Official pytorch code release of "[DisCoRD: Discrete Tokens to Continuous Motion
 🚀 **31/Dec/24** - Released the inference & evaluation code
 
 ## ⚙️ Settings
+```bash
+git clone https://github.com/whwjdqls/DisCoRD
+cd DisCoRD
+```
 ### Environments
+This codebase was tested on Python 3.8.5 with cuda 11.8
+``` bash
+conda env create -f environment.yaml
+conda activate discord
+```
+
 
 ### Download Checkpoints
 
@@ -45,7 +57,7 @@ Official pytorch code release of "[DisCoRD: Discrete Tokens to Continuous Motion
 
 ## 🏃🏻‍♂️ Inference
 
-## 🔥 Training DisCoRD
+## 🔥 Training
 
 ## 👀 Acknowledgements
 

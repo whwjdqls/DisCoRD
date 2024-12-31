@@ -1,0 +1,24 @@
+﻿name: discord
+channels:
+  - pytorch
+  - defaults
+  - nvidia
+dependencies:
+  - python=3.8.5
+  - pip=20.3
+  - pytorch-cuda=11.8
+  - pytorch=2.2.2
+  - torchvision=0.17.2
+  - numpy=1.22
+  - pip:
+    - timm==0.9.12
+    - clip @ git+https://github.com/openai/CLIP.git
+    - einops==0.8.0
+    - gdown==5.2.0
+    - matplotlib==3.3.4
+    - scipy ==1.9.1
+    - tqdm==4.66.5
+    - vector-quantize-pytorch==1.6.30
+    - omegaconf==2.3.0
+    - torchdiffeq==0.2.4
+    - ema-pytorch==0.7.0
