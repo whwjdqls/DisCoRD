@@ -1,0 +1,19 @@
+wandb/
+checkpoints/
+debug_files/
+__pycache__/
+*.out
+*.log
+evaluation/models/
+debug*.py
+debug*.sh
+debug*.yaml
+debug*/
+deprecated/debug*.py
+deprecated/debug*.sh
+deprecated/debug*.yaml
+# for glove
+glove/
+*.ipynb
+gifs/
+
