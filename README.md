@@ -1,6 +1,9 @@
-Code comming soon...
-Repository UNDER CONSTRUCTION
+# DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding
+[![arXiv](https://img.shields.io/badge/arXiv-<2408.06010>-red.svg)](https://arxiv.org/abs/2411.19527)
+[![ProjectPage](https://img.shields.io/badge/ProjectPage-DEEPTalk-<COLOR>.svg)](https://whwjdqls.github.io/discord.github.io/)
 
+# ToDo
+- [ ] 
 ```
 @misc{cho2024discorddiscretetokenscontinuous,
       title={DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding}, 
