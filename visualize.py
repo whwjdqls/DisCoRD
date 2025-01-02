@@ -133,7 +133,7 @@ def visualize_motion(
     pred_motions = rf_model.decode_with_RF(pred_ids, text_embedding=text_embedding, m_length=None)
     pred_motions = pred_motions.detach().cpu().numpy()
     pred_recon = pred_motions * std + mean # inverse transform
-    visualize.plot_3d_motion(save_path, pred_recon[0, :m_length[0].item()], clip_text[0], figsize=(4, 4), fps=30)
+    visualize.plot_3d_motion(save_path, pred_recon[0, :m_length[0].item()], clip_text[0], figsize=(4, 4), fps=20)
     
     print(f"Saved gif to {save_path}")
 
