@@ -96,7 +96,7 @@ After preparing all checkpoints, the directories should look as follows:
 
 Run visualize.py to generate motion on arbitrary text input. Ouputs will be saved in ./gifs
 
-❗ Our model generates fixed-length motion. Therefore, an explicit motion length must be provided when generating motion. To generate motion solely from text, you can directly use the motion length predictor provided in  [MoMask: Generative Masked Modeling of 3D Human Motions](https://arxiv.org/abs/2312.00063).
+❗ Our model generates fixed-length motion. Therefore, an explicit motion length must be provided when generating motion. To generate motion solely from text, you can directly use the motion length predictor provided in  [MoMask: Generative Masked Modeling of 3D Human Motions](https://github.com/EricGuo5513/momask-code).
 ``` bash
 python visualize.py --model_ckpt_path ./checkpoints/DisCoRD_Momask_RFDecoder_best.pth --input_text "A person is walking" --m_length 196
 ```
