@@ -34,7 +34,7 @@
 Official pytorch code release of "[DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding](https://arxiv.org/abs/2411.19527)"
 
 ## 📨 News
-🚀 **31/Dec/24** - 
+🚀 **01/Jan/25** - Released the inference & evaluation code
 
 ## ⚙️ Settings
 ```bash
@@ -48,19 +48,94 @@ conda env create -f environment.yaml
 conda activate discord
 ```
 
-
 ### Download Checkpoints
+DisCoRD can be easily built on any VQ-VAE-based motion generation model. We release checkpoints built on [MoMask: Generative Masked Modeling of 3D Human Motions](https://arxiv.org/abs/2312.00063).
 
-### Download Datasets
+1. Download Momask checkpoints. Detailed guidelines can be founded in [here](https://github.com/EricGuo5513/momask-codes).
 
-## 🏃🏻‍♂️ Inference
+    ``` bash
+    bash prepare/download_models.sh
+    ```
+2. Download evaluation models and gloves
+
+    ``` bash
+    bash prepare/download_evaluator.sh
+    bash prepare/download_glove.sh
+    ```
+3. Download DisCoRD checkpoint and place it in ./checkpoints.
+    ``` bash
+    https://drive.google.com/file/d/1glQFuMvWI_dKeQeS7s8V_4zdOHfIv1wS/view?usp=drive_link
+    ```
+
+After preparing all checkpoints, the directories should look as follows:
+
+``` bash
+.
+└── checkpoints
+    ├── Momask
+    │   ├── checkpoints
+    │   │   └── net_best_fid.tar
+    │   └── configs
+    ├── kit
+    │   ├── Comp_v6_KLD005
+    │   ├── rvq_nq6_dc512_nc512_noshare_qdp0.2_k
+    │   ├── t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_rvq6ns_k
+    │   ├── text_mot_match
+    │   └── tres_nlayer8_ld384_ff1024_rvq6ns_cdp0.2_sw_k
+    ├── t2m
+    │   ├── Comp_v6_KLD005
+    │   ├── length_estimator
+    │   ├── rvq_nq6_dc512_nc512_noshare_qdp0.2
+    │   ├── t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_rvq6ns
+    │   ├── text_mot_match
+    │   └── tres_nlayer8_ld384_ff1024_rvq6ns_cdp0.2_sw
+    └── DisCoRD_Momask_RFDecoder_best.pth
+```
+
+## 💭 Inference
+
+Run visualize.py to generate motion on arbitrary text input. Ouputs will be saved in ./gifs
+
+❗ Our model generates fixed-length motion. Therefore, an explicit motion length must be provided when generating motion. To generate motion solely from text, you can directly use the motion length predictor provided in  [MoMask: Generative Masked Modeling of 3D Human Motions](https://arxiv.org/abs/2312.00063).
+``` bash
+python visualize.py --model_ckpt_path ./checkpoints/DisCoRD_Momask_RFDecoder_best.pth --input_text "A person is walking" --m_length 196
+```
+
+## 🏃🏻‍♂️ Evaluation
+❗ Evaluation process takes a lot of time.
+
+Run evaluation.py to evaluate motion generation.
+``` bash
+python evaluation.py --model_ckpt_path ./checkpoints/DisCoRD_Momask_RFDecoder_best.pth
+```
+
+Run eval_MotionPrior.py to evaluate motion reconstruction. 
+``` bash
+python eval_MotionPrior.py --model_ckpt_path ./checkpoints/DisCoRD_Momask_RFDecoder_best.pth
+```
 
 ## 🔥 Training
 
+### Download Datasets
+Download the HumanML3D or KIT-ML dataset by following the guidelines provided [here](https://github.com/EricGuo5513/HumanML3D).
+### Training Code Coming Soon...
+
 ## 👀 Acknowledgements
+We gratefully acknowledge the open-source projects that served as the foundation for our work:
+
+[HumanML3D](https://github.com/EricGuo5513/HumanML3D).\
+[MoMask](https://github.com/EricGuo5513/momask-codes). \
+[T2M-GPT](https://github.com/Mael-zys/T2M-GPT).\
+[TalkSHOW](https://github.com/yhw-yhw/TalkSHOW).\
+[ProbTalk](https://github.com/feifeifeiliu/ProbTalk).\
+[TM2D](https://github.com/Garfield-kh/TM2D).
+
+
 
 ## 🔑 License
 This code is released under the MIT License.
+
+
 
 ## Citations
 If you think this repository is useful for your work, please consider citing it as follows:

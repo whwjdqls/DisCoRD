@@ -1,7 +1,4 @@
 #!/bin/bash
-
-
-mkdir checkpoints
 cd checkpoints
 mkdir t2m
 
@@ -14,6 +11,9 @@ unzip humanml3d_models.zip
 
 echo -e "Cleaning humanml3d_models.zip"
 rm humanml3d_models.zip
+
+mkdir ../Momask/checkpoints
+cp ./rvq_nq6_dc512_nc512_noshare_qdp0.2/model/net_best_fid.tar ../Momask/checkpoints/net_best_fid.tar
 
 cd ../
 mkdir kit

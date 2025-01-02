@@ -1,9 +1,13 @@
 wandb/
-checkpoints/
+checkpoints/t2m/
+checkpoints/Momask/checkpoints/
+checkpoints/kit/
 debug_files/
 __pycache__/
 *.out
 *.log
+*.pth
+*.tar
 evaluation/models/
 debug*.py
 debug*.sh

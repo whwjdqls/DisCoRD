@@ -22,8 +22,6 @@ def main(args):
     # # Load Configs
     data_cfg = config_utils.get_yaml_config(args.data_cfg_path)
     model_cfg = config_utils.get_yaml_config(args.model_cfg_path)
-    # # setup seed, device, wandb
-    # seed_everything(model_cfg.utils.seed)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # Load Data

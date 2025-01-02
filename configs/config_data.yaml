@@ -1,0 +1,27 @@
+t2m:
+  root_dir: /datasets2/human_motion/HumanML3D
+  motion_dir: /datasets2/human_motion/HumanML3D/new_new_joint_vecs
+  text_dir: /datasets2/human_motion/HumanML3D/texts
+  mean_path: /datasets2/human_motion/HumanML3D/Mean.npy
+  std_path: /datasets2/human_motion/HumanML3D/Std.npy
+  window_size: 64
+  joints_num: 22
+  dim_pose: 263
+  fps: 20
+  radius: 4
+  feat_bias: 5
+  max_motion_length: 196
+  min_motion_length: 40
+  max_text_len: 20
+  unit_length: 4
+kit:
+  data_root: /root/datasets/MARM/kit/HumanML3D
+  motion_dir: /root/datasets/MARM/kit/HumanML3D/new_joint_vecs
+  text_dir: /root/datasets/MARM/kit/HumanML3D/texts
+  joints_num: 21
+  dim_pose: 251
+  fps: 12.5
+  radius: 1920
+  feat_bias: 5
+  max_motion_length: 196
+  min_motion_length: 24

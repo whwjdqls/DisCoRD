@@ -1,0 +1,58 @@
+model:
+  name: RFDecoder
+  output_dim: 263
+  noise_std: 0.1
+  use_diffusion_pos_embed: false
+  text_condition: false
+  Unet1D:
+    use: true
+    dim: 512
+    dim_mults:
+    - 1
+    - 2
+    c_in_dim: 512
+    c_proj_dim: 256
+    up_conv_c: Repeat_and_stack_and_linear
+    dropout: 0.0
+    learned_variance: false
+    learned_sinusoidal_cond: false
+    random_fourier_features: false
+    learned_sinusoidal_dim: 16
+    sinusoidal_pos_emb_theta: 10000
+    use_attention: false
+    attn_dim_head: 32
+    attn_heads: 4
+  DiT:
+    use: false
+    c_in_dim: 512
+    c_proj_dim: 384
+    hidden_size: 512
+    num_heads: 4
+    mlp_ratio: 4
+    num_layers: 4
+    t_embedder: dit
+    max_seq_len: 200
+    drop_out_prob: 0.0
+    pos_encoding: None
+    temporal_bias: alibi_future
+  Reflow: false
+  vqvae_weight_path: ./checkpoints/Momask/checkpoints/net_best_fid.tar
+train:
+  ema_rate: 0.999
+  vqvae_inference: false
+  full_motion: false
+  num_epochs: 200
+  lr: 0.0005
+  scheduler: cosine_warmup
+  min_lr: 1.0e-05
+  max_grad_norm: 1.0
+  recon_loss: l1_smooth
+  save_every: 2
+  save_dir: ./checkpoints
+  log_step: 10
+  batch_size: 768
+  recon_weight: 1.0
+val:
+  batch_size: 512
+utils:
+  seed: 42

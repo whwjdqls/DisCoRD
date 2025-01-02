@@ -3,6 +3,7 @@ from os.path import join as pjoin
 import torch
 import numpy as np
 import argparse
+from tqdm import tqdm
 from MotionGen.momask_transformer.transformer import MaskTransformer, ResidualTransformer
 from MotionPriors import MotionPrior
 from evaluation.get_opt import get_opt
@@ -14,9 +15,8 @@ from utils.word_vectorizer import WordVectorizer
 from utils.utils import generate_date_time, seed_everything
 from MotionPriors.models.vq.model import RVQVAE
 from configs import config_utils
-# python eval_Momask.py --time_steps 10 --ext evaluation
+
 def load_vq_model(vq_opt, train_data='t2m'):
-    # opt_path = pjoin(opt.checkpoints_dir, opt.dataset_name, opt.vq_name, 'opt.txt')
     if train_data == 'kit':
         motion_dim = 251
     else:
@@ -55,8 +55,8 @@ def load_trans_model(model_opt, which_model):
                                       opt=model_opt)
     ckpt = torch.load(pjoin(model_opt.checkpoints_dir, model_opt.dataset_name, model_opt.name, 'model', which_model),
                       map_location=device)
+    
     model_key = 't2m_transformer' if 't2m_transformer' in ckpt else 'trans'
-    # print(ckpt.keys())
     missing_keys, unexpected_keys = t2m_transformer.load_state_dict(ckpt[model_key], strict=False)
     assert len(unexpected_keys) == 0
     assert all([k.startswith('clip_model.') for k in missing_keys])
@@ -76,7 +76,6 @@ def load_res_model(res_opt):
                                             clip_dim=512,
                                             shared_codebook=vq_opt.shared_codebook,
                                             cond_drop_prob=res_opt.cond_drop_prob,
-                                            # codebook=vq_model.quantizer.codebooks[0] if opt.fix_token_emb else None,
                                             share_weight=res_opt.share_weight,
                                             clip_version=clip_version,
                                             opt=res_opt)
@@ -90,15 +89,12 @@ def load_res_model(res_opt):
     return res_transformer
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('--eval_cfg_pth', type=str, default='./configs/momask_trans_eval_config.yaml')
-    parser.add_argument("--data_cfg_path", type=str, default="./configs/t2mdataset.yaml")
-    parser.add_argument("--model_cfg_path", type=str, default="./configs/temporalVAE.yaml")
+    parser.add_argument('--eval_cfg_pth', type=str, default='./configs/momask_trans_eval_config_t2m.yaml')
+    parser.add_argument("--data_cfg_path", type=str, default="./configs/config_data.yaml")
+    parser.add_argument("--model_cfg_path", type=str, default="./configs/config_model.yaml")
     parser.add_argument("--train_data", type=str, default="t2m", choices=["t2m", "kit"])
     parser.add_argument("--num_sample_steps", type=int, default=16)
-    # parser.add_argument("--deterministic", action='store_true')
-    parser.add_argument("--decoder_noise", type=float, default=0) # if 0, deterministic
     parser.add_argument("--model_ckpt_path", type=str, default=None, help="if None, we are evaluating the original momask model, else we are evaluating refinement model")
     parser.add_argument("--seed", type=int, default=24)
     args = parser.parse_args()
@@ -127,7 +123,7 @@ if __name__ == '__main__':
 
     vq_opt_path = pjoin(opt.checkpoints_dir, opt.dataset_name, model_opt.vq_name, 'opt.txt')
     vq_opt = get_opt(vq_opt_path, device=device)
-    vq_model, vq_opt = load_vq_model(vq_opt,train_data=args.train_data)
+    vq_model, vq_opt = load_vq_model(vq_opt, train_data=args.train_data)
 
     model_opt.num_tokens = vq_opt.nb_code
     model_opt.num_quantizers = vq_opt.num_quantizers
@@ -162,16 +158,8 @@ if __name__ == '__main__':
         rf_model = MotionPrior.MotionPriorWrapper(model_cfg, args.model_ckpt_path, device)
         rf_model.eval()
         rf_model.num_sample_steps = args.num_sample_steps
-        if model_cfg.model.name == "RectifiedFlow":
-            if args.decoder_noise == 0:
-                rf_model.deterministic = True
-            else:
-                rf_model.deterministic = False
-            rf_model.model.noise_std = args.decoder_noise
-
         rf_model.set_vqvae() # as we have z condition, we always load vqvae
     else: # we are evaluating the original momask model
-        # raise NotImplementedError
         rf_model = None
         mean = test_mean
         std = test_std
@@ -192,7 +180,7 @@ if __name__ == '__main__':
 
     fid, div, top1, top2, top3, matching, mm = [], [], [], [], [], [], []
     repeat_time = 20
-    for i in range(repeat_time):
+    for i in tqdm(range(repeat_time), desc='Repeat Time'):
         with torch.no_grad():
             best_fid, best_div, Rprecision, best_matching, best_mm = \
                 eval_t2m.evaluation_mask_transformer_test_plus_res(test_dataloader, vq_model, res_model, t2m_transformer,
@@ -217,17 +205,12 @@ if __name__ == '__main__':
     matching = np.array(matching)
     mm = np.array(mm)
     
-    # noise_std = rf_model.model.get('noise_std', "No_decoder_noise")
-    if model_cfg.model.name == "RectifiedFlow":
-        stochasticity = 'deterministic' if rf_model.deterministic else f'stochastic_{rf_model.model.noise_std}'
-    else:
-        stochasticity = 'thisisDecoder'
     if args.model_ckpt_path:
         base_dir = os.path.dirname(os.path.dirname(args.model_ckpt_path)) # base model directory
         model_name = os.path.basename(args.model_ckpt_path).split('.')[0] # model name
         eval_dir = pjoin(base_dir, 'eval')
         os.makedirs(eval_dir, exist_ok=True)
-        file = pjoin(eval_dir, f'{model_name}_eval_momask_step{args.num_sample_steps}_{stochasticity}_seed{args.seed}_date{generate_date_time()}.txt')
+        file = pjoin(eval_dir, f'{model_name}_eval_momask_step{args.num_sample_steps}_seed{args.seed}_date{generate_date_time()}.txt')
     else:
         file = pjoin(opt.checkpoints_dir, opt.dataset_name, opt.name, f'eval_seed{args.seed}_date{generate_date_time()}.txt')
     f = open(file, 'w')
@@ -240,11 +223,8 @@ if __name__ == '__main__':
                 f"\tTOP1: {np.mean(top1):.3f}, conf. {np.std(top1) * 1.96 / np.sqrt(repeat_time):.3f}, TOP2. {np.mean(top2):.3f}, conf. {np.std(top2) * 1.96 / np.sqrt(repeat_time):.3f}, TOP3. {np.mean(top3):.3f}, conf. {np.std(top3) * 1.96 / np.sqrt(repeat_time):.3f}\n" \
                 f"\tMatching: {np.mean(matching):.3f}, conf. {np.std(matching) * 1.96 / np.sqrt(repeat_time):.3f}\n" \
                 f"\tMultimodality:{np.mean(mm):.3f}, conf.{np.std(mm) * 1.96 / np.sqrt(repeat_time):.3f}\n\n"
-    # logger.info(msg_final)
+                
     print(msg_final)
     print(msg_final, file=f, flush=True)
 
     f.close()
-
-
-# python eval_t2m_trans.py --name t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_vq --dataset_name t2m --gpu_id 3 --cond_scale 4 --time_steps 18 --temperature 1 --topkr 0.9 --gumbel_sample --ext cs4_ts18_tau1_topkr0.9_gs

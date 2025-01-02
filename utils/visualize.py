@@ -9,7 +9,6 @@ from matplotlib.animation import FuncAnimation, PillowWriter,FFMpegFileWriter
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import mpl_toolkits.mplot3d.axes3d as p3
 
-
 from common.quaternion import *
 from .paramUtil import *
 
@@ -358,30 +357,30 @@ def get_visualize_data(data_root, sample_num=10, batch=False):
     return sample_data
 
 
-import torch.nn.functional as F
-import wandb
-import clip
-import torch
+# import torch.nn.functional as F
+# import wandb
+# import clip
+# import torch
 
-def log_samples_wandb(model, vae, std, mean, animation_dir, data_root_path, quant_factor, cfg=5.0, cfg_schedule='linear'):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = model.to(device)
-    model.eval()
-    vae = vae.to(device)
-    vae.eval()
-    visualize_dict = get_visualize_data(data_root_path)
-    gif_paths = []
-    for name, data in visualize_dict.items():
-        save_path = os.path.join(animation_dir, name + '.gif')
-        texts = clip.tokenize(data['caption'], truncate=True).to(device) # (1, len)
-        # generate 1 token at a time
-        predicted_latents = model.generate(torch.tensor([data['m_length']//(2**quant_factor)]).to(device), texts = texts, num_iter=data['m_length']//((2**quant_factor)), cfg=cfg, cfg_schedule=cfg_schedule, temperature=1.0, progress=False)
-        predicted_latents = F.pad(predicted_latents, ((0,0,0, (2**quant_factor) - predicted_latents.shape[1] %(2**quant_factor),0,0)), mode='constant', value=0)
-        predicted_motions = vae.decode(predicted_latents) # bs, seq_len, embdim
-        predicted_motions = predicted_motions.cpu().detach().numpy() * std + mean
-        plot_3d_motion(save_path, predicted_motions[0, :data['m_length']], data['caption'], figsize=(4,4), fps=20)
-        gif_paths.append(save_path)
-    wandb.log({"videos": [wandb.Video(data_or_path=path, caption=name, fps=20) for path, name in zip(gif_paths, visualize_dict.keys())]})
+# def log_samples_wandb(model, vae, std, mean, animation_dir, data_root_path, quant_factor, cfg=5.0, cfg_schedule='linear'):
+#     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#     model = model.to(device)
+#     model.eval()
+#     vae = vae.to(device)
+#     vae.eval()
+#     visualize_dict = get_visualize_data(data_root_path)
+#     gif_paths = []
+#     for name, data in visualize_dict.items():
+#         save_path = os.path.join(animation_dir, name + '.gif')
+#         texts = clip.tokenize(data['caption'], truncate=True).to(device) # (1, len)
+#         # generate 1 token at a time
+#         predicted_latents = model.generate(torch.tensor([data['m_length']//(2**quant_factor)]).to(device), texts = texts, num_iter=data['m_length']//((2**quant_factor)), cfg=cfg, cfg_schedule=cfg_schedule, temperature=1.0, progress=False)
+#         predicted_latents = F.pad(predicted_latents, ((0,0,0, (2**quant_factor) - predicted_latents.shape[1] %(2**quant_factor),0,0)), mode='constant', value=0)
+#         predicted_motions = vae.decode(predicted_latents) # bs, seq_len, embdim
+#         predicted_motions = predicted_motions.cpu().detach().numpy() * std + mean
+#         plot_3d_motion(save_path, predicted_motions[0, :data['m_length']], data['caption'], figsize=(4,4), fps=20)
+#         gif_paths.append(save_path)
+#     wandb.log({"videos": [wandb.Video(data_or_path=path, caption=name, fps=20) for path, name in zip(gif_paths, visualize_dict.keys())]})
     
 # def visualize_and_log(data_root, animation_dir, sample_nusm=10)
 #     sample_data_dict = get_visualize_data(data_root)

@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 from os.path import join as pjoin
+from tqdm import tqdm
 
 import numpy as np
 import torch
@@ -11,7 +12,6 @@ from evaluation import eval_t2m
 from evaluation.get_opt import get_opt
 from evaluation.t2m_eval_wrapper import EvaluatorModelWrapper
 from MotionPriors import MotionPrior
-from MotionPriors.models import TemporalVAE, TemporalVAE_L, TransformerVAE
 from MotionPriors.models.vq.model import RVQVAE
 from utils.utils import generate_date_time, seed_everything
 from utils.word_vectorizer import WordVectorizer
@@ -51,11 +51,7 @@ def main(args):
         data_cfg = data_cfg.t2m
     elif args.train_data == "kit":
         data_cfg = data_cfg.kit 
-    
-    # load the mean an std of the dataset that was used to train the model
-    # if args.rvq_model_dir:
-    #     meta_dir = args.rvq_model_dir + '/meta'
-    # else:
+
     meta_dir = os.path.dirname(os.path.dirname(args.model_ckpt_path)) + '/meta'
 
     if args.train_data == 'kit':
@@ -64,10 +60,7 @@ def main(args):
     else:
         test_mean = np.load("./datasets/t2m-mean.npy")
         test_std = np.load("./datasets/t2m-std.npy")
-    # if args.rvq_model_dir: 
-    #     mean = np.load("./datasets/t2m-mean.npy")
-    #     std = np.load("./datasets/t2m-std.npy")
-    # else:
+
     mean = np.load(meta_dir +'/mean.npy') 
     std = np.load(meta_dir +'/std.npy')
     
@@ -81,20 +74,16 @@ def main(args):
     nb_joints = 21 if args.train_data == 'kit' else 22
     dim_pose = 251 if args.train_data == 'kit' else 263
 
-
     print(f"Loading model from {args.model_ckpt_path}")
     
     if args.rvq_model_dir:
         vq_opt_path = pjoin(args.rvq_model_dir, 'opt.txt')
         vq_opt = get_opt(vq_opt_path, device=device)
-        net,vq_epoch = load_vq_model(vq_opt, args.rvq_model_dir, 'net_best_fid.tar')
+        net, vq_epoch = load_vq_model(vq_opt, args.rvq_model_dir, 'net_best_fid.tar')
     else:
-        # net = MotionPrior.load_MotionPrior(args.model_ckpt_path, model_cfg)
-        # net = TemporalVAE_L.AutoencoderKL(embed_dim=32, ch_mult=(1, 1), use_variational=True)
-        # net.load_state_dict(torch.load(args.model_ckpt_path, map_location="cpu"))
         net = MotionPrior.MotionPriorWrapper(model_cfg, args.model_ckpt_path, device)
     
-    if model_cfg.model.name in ["RectifiedFlow", "RFDecoder", "RFfromNoise"]:
+    if model_cfg.model.name == "RFDecoder":
         vae_ckpt = model_cfg.model.vqvae_weight_path # pretrained VQVAE
         vae_root = os.path.dirname(os.path.dirname(vae_ckpt))
         vae_cfg_path = os.path.join(vae_root, "configs/config_model.yaml")
@@ -107,15 +96,6 @@ def main(args):
         assert torch.allclose(torch.tensor(mean), torch.tensor(vae_mean), atol=1e-5), "mean not equal"
         assert torch.allclose(torch.tensor(std), torch.tensor(vae_std), atol=1e-5), "std not equal"
         net.num_sample_steps = args.num_sample_steps
-        
-        if model_cfg.model.name == "RectifiedFlow":
-            if args.decoder_noise == 0:
-                net.deterministic = True
-            else:
-                net.deterministic = False
-            net.model.noise_std = args.decoder_noise
-        
-
     
     net.eval()
     net.to(device)
@@ -128,7 +108,7 @@ def main(args):
     pred_static_areas, pred_noise_areas, pred_static_areas_v2, pred_noise_areas_v2 = [], [], [], []
     repeat_time = args.repeat_time
     normalize_with_test = not args.deactivate_norm_at_test
-    for i in range(repeat_time):
+    for i in tqdm(range(repeat_time), desc="Repeat Time"):
         best_fid, best_div, Rprecision, best_matching, l1_dist, gt_jerk, pred_jerk,  pred_static_area, pred_noise_area, pred_static_area_v2, pred_noise_area_v2= \
             eval_t2m.evaluation_vqvae_plus_mpjpe_plus_jerk(test_dataloader, net, i, eval_wrapper=eval_wrapper, num_joint=nb_joints,
                                                  test_mean=test_mean, test_std=test_std, normalize_with_test=normalize_with_test,
@@ -167,13 +147,8 @@ def main(args):
     model_name = os.path.basename(args.model_ckpt_path).split('.')[0] # model name
     eval_dir = pjoin(base_dir, 'eval')
     os.makedirs(eval_dir, exist_ok=True)
-    if model_cfg.model.name == "RectifiedFlow":
-        if net.deterministic :
-            file = pjoin(eval_dir, f'{model_name}_eval_{args.num_sample_steps}_deterministic_smooth{args.smooth_sigma}_seed{args.seed}.txt')
-        else:
-            file = pjoin(eval_dir, f'{model_name}_eval_{args.num_sample_steps}_stochastic{args.decoder_noise}_smooth{args.smooth_sigma}_seed{args.seed}.txt')
-    else:
-        file = pjoin(eval_dir, f'{model_name}_eval_smooth{args.smooth_sigma}_seed{args.seed}.txt')
+
+    file = pjoin(eval_dir, f'{model_name}_eval_smooth{args.smooth_sigma}_seed{args.seed}.txt')
     f = open(file, 'w')
     
     print(f'{file} final result')
@@ -197,18 +172,14 @@ def main(args):
     print(msg_final, file=f, flush=True)
     f.close()
 
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # use the paths used to train the model
-    parser.add_argument("--data_cfg_path", type=str, default="./configs/t2mdataset.yaml")
-    parser.add_argument("--model_cfg_path", type=str, default="./configs/temporalVAE.yaml")
+    parser.add_argument("--data_cfg_path", type=str, default="./configs/config_data.yaml")
+    parser.add_argument("--model_cfg_path", type=str, default="./configs/config_model.yaml")
     parser.add_argument("--model_ckpt_path", type=str)
     parser.add_argument("--train_data", type=str, default="t2m", choices=["t2m", "kit"])
     parser.add_argument("--num_sample_steps", type=int, default=16)
-    # parser.add_argument("--deterministic", action="store_true")
-    parser.add_argument("--decoder_noise", type=float, default=0) # if 0, deterministics
     parser.add_argument("--rvq_model_dir" , type=str, default=None)
     parser.add_argument("--smooth_sigma", type=float, default=0.0)
     parser.add_argument("--deactivate_norm_at_test", action="store_true", help="Deactivate normalization using test_mean and test_std")
