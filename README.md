@@ -35,6 +35,7 @@ Official pytorch code release of "[DisCoRD: Discrete Tokens to Continuous Motion
 
 ## 📨 News
 🚀 **01/Jan/25** - Released the inference & evaluation code
+🚀 **06/June/25** - DisCoRD has be accepted to ICCV 2025!
 
 ## ⚙️ Settings
 ```bash
