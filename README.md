@@ -34,9 +34,14 @@
 Official pytorch code release of "[DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding](https://arxiv.org/abs/2411.19527)"
 
 ## 📨 News
+
+
 🚀 **01/Jan/25** - Released the inference & evaluation code
+
 🚀 **06/June/25** - DisCoRD has be accepted to ICCV 2025!
 
+
+🚀 **24/July/25** - DisCoRD will be presented as a Highlight paper!
 ## ⚙️ Settings
 ```bash
 git clone https://github.com/whwjdqls/DisCoRD
