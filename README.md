@@ -1,4 +1,4 @@
-# DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding [ICCV 2025]
+# DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding [ICCV 2025, Highlight]
 
 ![](./images/teaser.png)
 
