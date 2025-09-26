@@ -65,7 +65,7 @@ def main(args):
     std = np.load(meta_dir +'/std.npy')
     
     # this part is from momask-codes
-    dataset_opt_path = f'evaluation/models/{args.train_data}/Comp_v6_KLD005/opt.txt'
+    dataset_opt_path = f'./checkpoints/models/{args.train_data}/Comp_v6_KLD005/opt.txt'
     wrapper_opt = get_opt(dataset_opt_path,device)
     eval_wrapper = EvaluatorModelWrapper(wrapper_opt)
     EvaluatorModelWrapper.device = device

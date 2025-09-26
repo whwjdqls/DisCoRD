@@ -1,5 +1,5 @@
 batch_size: 32
-checkpoints_dir: ./checkpoints
+checkpoints_dir: ./checkpoints/models
 cond_scale: 4.0
 dataset_name: t2m
 dropout: 0.2

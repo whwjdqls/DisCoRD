@@ -115,9 +115,9 @@ if __name__ == '__main__':
         data_cfg = data_cfg.kit 
     
     if args.train_data == 'kit':
-        model_opt_path = './checkpoints/kit/t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_rvq6ns_k/opt.txt'
+        model_opt_path = './checkpoints/models/kit/t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_rvq6ns_k/opt.txt'
     elif args.train_data == 't2m':
-        model_opt_path = './checkpoints/t2m/t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_rvq6ns/opt.txt'
+        model_opt_path = './checkpoints/models/t2m/t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_rvq6ns/opt.txt'
     model_opt = get_opt(model_opt_path, device=device)
     clip_version = 'ViT-B/32'
 
@@ -135,7 +135,7 @@ if __name__ == '__main__':
 
     assert res_opt.vq_name == model_opt.vq_name
 
-    dataset_opt_path = f'evaluation/models/{args.train_data}/Comp_v6_KLD005/opt.txt'
+    dataset_opt_path = f'checkpoints/models/{args.train_data}/Comp_v6_KLD005/opt.txt'
     wrapper_opt = get_opt(dataset_opt_path,device)
     eval_wrapper = EvaluatorModelWrapper(wrapper_opt)
     EvaluatorModelWrapper.device = device

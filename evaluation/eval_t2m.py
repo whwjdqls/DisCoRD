@@ -2008,7 +2008,7 @@ def evaluate_motion_prior(test_dataloader, vae_model, model_cfg, device, vqvae=N
         test_mean = np.load("./datasets/kit_mean.npy")
         test_std = np.load("./datasets/kit_std.npy")
     
-    dataset_opt_path = f"evaluation/models/{train_data}/Comp_v6_KLD005/opt.txt"
+    dataset_opt_path = f"./checkpoints/models/{train_data}/Comp_v6_KLD005/opt.txt"
     wrapper_opt = get_opt(dataset_opt_path, device)
     eval_wrapper = EvaluatorModelWrapper(wrapper_opt)
     EvaluatorModelWrapper.device = device
