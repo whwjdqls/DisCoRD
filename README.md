@@ -34,7 +34,7 @@
 Official pytorch code release of "[DisCoRD: Discrete Tokens to Continuous Motion via Rectified Flow Decoding](https://arxiv.org/abs/2411.19527)"
 
 ## 📨 News
-
+🚀 **27/Sep/25** - Released training code!
 
 🚀 **01/Jan/25** - Released the inference & evaluation code
 
