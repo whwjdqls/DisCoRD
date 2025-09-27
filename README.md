@@ -82,20 +82,20 @@ After preparing all checkpoints, the directories should look as follows:
     │   ├── checkpoints
     │   │   └── net_best_fid.tar
     │   └── configs
-    ├── kit
-    │   ├── Comp_v6_KLD005
-    │   ├── rvq_nq6_dc512_nc512_noshare_qdp0.2_k
-    │   ├── t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_rvq6ns_k
-    │   ├── text_mot_match
-    │   └── tres_nlayer8_ld384_ff1024_rvq6ns_cdp0.2_sw_k
-    ├── t2m
-    │   ├── Comp_v6_KLD005
-    │   ├── length_estimator
-    │   ├── rvq_nq6_dc512_nc512_noshare_qdp0.2
-    │   ├── t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_rvq6ns
-    │   ├── text_mot_match
-    │   └── tres_nlayer8_ld384_ff1024_rvq6ns_cdp0.2_sw
-    └── DisCoRD_Momask_RFDecoder_best.pth
+    └──  models
+          ├── t2m
+          │   ├── Comp_v6_KLD005
+          │   ├── rvq_nq6_dc512_nc512_noshare_qdp0.2_k
+          │   ├── t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_rvq6ns_k
+          │   ├── text_mot_match
+          │   └── tres_nlayer8_ld384_ff1024_rvq6ns_cdp0.2_sw_k
+          └──t2m
+              ├── Comp_v6_KLD005
+              ├── length_estimator
+              ├── rvq_nq6_dc512_nc512_noshare_qdp0.2
+              ├── t2m_nlayer8_nhead6_ld384_ff1024_cdp0.1_rvq6ns
+              ├── text_mot_match
+              └── tres_nlayer8_ld384_ff1024_rvq6ns_cdp0.2_sw
 ```
 
 ## 💭 Inference
@@ -124,7 +124,10 @@ python eval_MotionPrior.py --model_ckpt_path ./checkpoints/DisCoRD_Momask_RFDeco
 
 ### Download Datasets
 Download the HumanML3D or KIT-ML dataset by following the guidelines provided [here](https://github.com/EricGuo5513/HumanML3D).
-### Training Code Coming Soon...
+### Training 
+``` bash
+python train_rf_decoder_from_vqvae.py --data_cfg_path ./configs/config_data.yaml --model_cfg_path ./configs/config_model.yaml
+```
 
 ## 👀 Acknowledgements
 We gratefully acknowledge the open-source projects that served as the foundation for our work:
